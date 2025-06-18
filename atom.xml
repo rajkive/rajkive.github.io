@@ -23,5 +23,117 @@
       <pubDate>Wed, 18 Jun 2025 00:00:00 +0000</pubDate>
     </item>
     
+    <item>
+      <title>Over the Wire Bandit</title>
+      <link>https://rajkive.github.io/posts/over-the-wire-bandit/</link>
+      <description>&lt;p&gt;One of the best resources that I&amp;rsquo;ve been recommended to learn linux commands is Over the Wire. It&amp;rsquo;s a gamified way to learn different concepts in cybersecurity, one such game is called &lt;em&gt;&lt;strong&gt;bandit&lt;/strong&gt;&lt;/em&gt; which primarily focuses on using different commands to find a text/flag which in our case is the password for next level.&lt;/p&gt;
+&lt;p&gt;In order to get started, I had to in through &lt;em&gt;ssh&lt;/em&gt; with the format &lt;a href=&#34;mailto:username@bandit.overthewire.org&#34;&gt;username@bandit.overthewire.org&lt;/a&gt; on port 2220.&lt;/p&gt;
+&lt;h2 id=&#34;few-things-to-know&#34;&gt;Few things to know&lt;/h2&gt;
+&lt;p&gt;This is a simple write-up of levels from 0 to however many I can solve.  I&amp;rsquo;m giving the answers through my thought process and there is always the case where there are different ways to approach the same question.&lt;/p&gt;
+&lt;p&gt;Before you start, there are few things you will need to know, first to use the man page for commands and their arguments. Second, some common commands and arguments to know:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;cat: how view the content in the terminal&lt;/li&gt;
+&lt;li&gt;ls -a : to view all the files in a directory, even the hidden ones&lt;/li&gt;
+&lt;li&gt;cat ./ : use ./ when dealing with weird file names like &amp;ldquo;-&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;file : to know the file- type of a particular file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Third, remember that you&amp;rsquo;re not supposed to know everything, that&amp;rsquo;s why research and search around, this way you will learn more!!!&lt;/p&gt;
+&lt;p&gt;Also don&amp;rsquo;t forget to keep their website open as they have the description of each level, without it you&amp;rsquo;ll be lost.&lt;/p&gt;
+&lt;h2 id=&#34;level-0--level-1&#34;&gt;Level 0 &amp;ndash;&amp;gt; Level 1&lt;/h2&gt;
+&lt;p&gt;Here we simply had to use the &lt;strong&gt;cat&lt;/strong&gt; command to display the text in the file, which contains the password for our next level.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/bandit/l0.png&#34;
+  alt=&#34;l0&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;h2 id=&#34;level-1--level-2&#34;&gt;Level 1 &amp;ndash;&amp;gt; Level 2&lt;/h2&gt;
+&lt;p&gt;Here, I first used the ls -l command to list all the files available, then comes the tricky part. The name of the file is a literal dash, the character &amp;ldquo;-&amp;rdquo;. As I mentioned earlier, when dealing with such files using the ./ is the best way to go ahead.  The ./ simply means &amp;ldquo;Look in the current directory.&amp;rdquo;
+so the command was something like &lt;strong&gt;./-&lt;/strong&gt; and that&amp;rsquo;s it! We got the password for next level.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/bandit/l1.png&#34;
+  alt=&#34;l1&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;h2 id=&#34;level-2--level-3&#34;&gt;Level 2 &amp;ndash;&amp;gt; Level 3&lt;/h2&gt;
+&lt;p&gt;In the this level, we&amp;rsquo;re faced with another weird filename, it has spaces in it&amp;rsquo;s name and when you try it, the ./ command won&amp;rsquo;t work and the man page isn&amp;rsquo;t of much help either. This is where the &amp;ldquo;doing your own research&amp;rdquo; part comes in.&lt;/p&gt;
+&lt;p&gt;The answer is pretty simple, you need to use &amp;quot; &amp;quot; or double quotes.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/bandit/l2.png&#34;
+  alt=&#34;l2&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;h2 id=&#34;level-3--level-4&#34;&gt;Level 3 &amp;ndash;&amp;gt; Level 4&lt;/h2&gt;
+&lt;p&gt;This one was a bit tricky for me as you can see in the image. As usual I started using the ls -l command but it did not work, as it&amp;rsquo;s just a long listing format or in other words gives you the mode, number of links, owner, group, size (in bytes), and time of last modification for each file. But ls -a commands is the one which will show you &lt;strong&gt;all&lt;/strong&gt; the files. And once you find what you are looking for, simply use the cat command followed by the filename.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/bandit/l3.png&#34;
+  alt=&#34;l3&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;h2 id=&#34;level-4--level-5&#34;&gt;Level 4 &amp;ndash;&amp;gt; Level 5&lt;/h2&gt;
+&lt;p&gt;Here they have given a very specific description that the flag is in a human-readable format/filetype only. What this usually means is that we need to find the file type which is in format of &amp;ldquo;ASCII&amp;rdquo; characters or text. file command is the way to go for this but there are lot&amp;rsquo;s of file and brute-forcing each one is time consuming and not efficient. Hence we need to parse through the entire directory and for that you need to use the ./* which means &amp;ldquo;in this directory for all&amp;rdquo;, this will give you an output that looks something like in the image below and you&amp;rsquo;ll have your answer&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/bandit/l4.png&#34;
+  alt=&#34;l4&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;h2 id=&#34;level-5--level-6&#34;&gt;Level 5 &amp;ndash;&amp;gt; Level 6&lt;/h2&gt;
+&lt;p&gt;This one was a bit tricky as there are multiple ways to find the answer due to the specifications given in the documentation. The method which I used is using the grep method and searching by &lt;strong&gt;du&lt;/strong&gt; and &lt;strong&gt;grep&lt;/strong&gt; commands with some arguments. As it was given that it has a specific file size, I used du command to search by the file space with -a(all files and not just directories) and -b(bytes) with grep to find the pattern of 1033. And this how I got my answer.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/bandit/l5.png&#34;
+  alt=&#34;l5&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;h2 id=&#34;level-6--level-7&#34;&gt;Level 6 &amp;ndash;&amp;gt; Level 7&lt;/h2&gt;
+&lt;p&gt;Here, it&amp;rsquo;s kind of the same as the previous levels. Each file is owned by a user and a group. You can see what user and group owns a file with the ls command and its -l tag. To find the file, we will need to run the command from the root directory so we don&amp;rsquo;t miss anything. I used the command &lt;code&gt;find / -type f -user bandit7 -group bandit6 -size 33c&lt;/code&gt;  and with a little bit of scrolling, I got the answer.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;bandit6@bandit:~$ find / -type f -user bandit7 -group bandit6 -size 33c
+find: ‘/var/cache/private’: Permission denied
+find: ‘/var/cache/apparmor/2425d902.0’: Permission denied
+find: ‘/var/cache/apparmor/baad73a1.0’: Permission denied
+find: ‘/var/lib/polkit-1’: Permission denied
+find: ‘/var/lib/amazon’: Permission denied
+/var/lib/dpkg/info/bandit7.password
+find: ‘/var/lib/apt/lists/partial’: Permission denied
+find: ‘/var/lib/chrony’: Permission denied
+find: ‘/var/lib/snapd/void’: Permission denied
+find: ‘/var/lib/snapd/cookie’: Permission denied
+find: ‘/var/lib/private’: Permission denied
+find: ‘/var/lib/ubuntu-advantage/apt-esm/var/lib/apt/lists/partial’: Permission denied
+
+
+bandit6@bandit:~$ cat /var/lib/dpkg/info/bandit7.password
+morbNTDkSW6jIlUc0ymOdMaLnOlFVAaj
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I got to know that there is a way to direct the all the error messages/ permission denied message so we don&amp;rsquo;t have to scroll through a lot. You simply need to add &lt;code&gt;2&amp;gt;/dev/null&lt;/code&gt; at the end of the previous command. It will look something like:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;bandit6@bandit:~$ find / -type f -user bandit7 -group bandit6 -size 33c 2&amp;gt;/dev/null
+/var/lib/dpkg/info/bandit7.password
+&lt;/code&gt;&lt;/pre&gt;</description>
+      <author>rajkive</author>
+      <guid>https://rajkive.github.io/posts/over-the-wire-bandit/</guid>
+      <pubDate>Wed, 18 Jun 2025 00:00:00 +0000</pubDate>
+    </item>
+    
   </channel>
 </rss>

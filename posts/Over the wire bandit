@@ -1,3 +1,9 @@
+---
+author: "Rajshree"
+title: "Over the Wire Bandit"
+date: "2025-06-18"
+draft: false
+---
 
 One of the best resources that I've been recommended to learn linux commands is Over the Wire. It's a gamified way to learn different concepts in cybersecurity, one such game is called ***bandit*** which primarily focuses on using different commands to find a text/flag which in our case is the password for next level. 
 
