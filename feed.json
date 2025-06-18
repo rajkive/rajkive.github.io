@@ -1,0 +1,34 @@
+{
+  "version": "https://jsonfeed.org/version/1",
+  "title": "rajkive",
+  "home_page_url": "https://rajkive.github.io/",
+  "feed_url": "https://rajkive.github.io/feed.json",
+  "description": "A minimal hugo theme focus on content",
+  "favicon": "https://rajkive.github.io//assets/favicon.ico",
+  "expired": false,
+  "author": {
+    "name": "rajkive",
+    "url": "https://rajkive.github.io/"
+  },
+  "items": [
+    
+    
+
+    
+    {
+      "id": "369720c81584a5a9110b67380fe75a730592024e",
+      "title": "First post ig",
+      "summary": "",
+      "content_text": "",
+      "content_html": "",
+      "url": "https://rajkive.github.io/posts/my-first-post/",
+      "date_published": "18066-18-09T60:1818:00+00:00",
+      "date_modified": "18066-18-09T60:1818:00+00:00",
+      "author": {
+        "name": "rajkive",
+        "url": "https://rajkive.github.io/"
+      }
+    }
+    
+  ]
+}

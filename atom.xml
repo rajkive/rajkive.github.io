@@ -1,0 +1,26 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    
+    <title>rajkive</title>
+    <description>A minimal hugo theme focus on content</description>
+    <link>https://rajkive.github.io/</link>
+    
+    <language>en</language>
+    <copyright>Copyright 2025, Calvin Tran</copyright>
+    <lastBuildDate>Tue, 18 Jun 2024 00:00:00 +0000</lastBuildDate>
+    <generator>Hugo - gohugo.io</generator>
+    <docs>http://cyber.harvard.edu/rss/rss.html</docs>
+    <atom:link href="https://rajkive.github.io//atom.xml" rel="self" type="application/atom+xml"/>
+    
+    
+    <item>
+      <title>First post ig</title>
+      <link>https://rajkive.github.io/posts/my-first-post/</link>
+      <description></description>
+      <author>rajkive</author>
+      <guid>https://rajkive.github.io/posts/my-first-post/</guid>
+      <pubDate>Tue, 18 Jun 2024 00:00:00 +0000</pubDate>
+    </item>
+    
+  </channel>
+</rss>
