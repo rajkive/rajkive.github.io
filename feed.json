@@ -16,11 +16,11 @@
 
     
     {
-      "id": "369720c81584a5a9110b67380fe75a730592024e",
-      "title": "First post ig",
+      "id": "d26801875dfb73deba0b2907fa3a692580449414",
+      "title": "Hugo be like",
       "summary": "",
-      "content_text": "",
-      "content_html": "",
+      "content_text": "I am happy to share that after MANY failed attempts on trying to deploy it using github actions and choosing between themes, I have finally successfully deployed this blog.\n",
+      "content_html": "\u003cp\u003eI am happy to share that after MANY failed attempts on trying to deploy it using github actions and choosing between themes, I have finally successfully deployed this blog.\u003c/p\u003e\n",
       "url": "https://rajkive.github.io/posts/my-first-post/",
       "date_published": "18066-18-09T60:1818:00+00:00",
       "date_modified": "18066-18-09T60:1818:00+00:00",
