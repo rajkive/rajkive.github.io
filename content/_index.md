@@ -1,6 +1,6 @@
 ## Hi there! 👋
 
-<img class="avatar" src="https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Happy&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Pale" alt="avatar">
+<img class="avatar" src="/prof.png" alt="avatar">
 
 I'm Rajshree - a computer science student with an interest in cybersecurity
 
