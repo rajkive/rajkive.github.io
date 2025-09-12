@@ -2,27 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://rajkive.github.io/</loc>
+    <lastmod>2025-09-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://rajkive.github.io/posts/imaginaryctf-2025---web/</loc>
+    <lastmod>2025-09-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://rajkive.github.io/posts/</loc>
+    <lastmod>2025-09-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://rajkive.github.io/posts/py-keylogger/</loc>
     <lastmod>2025-07-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/py-keylogger/</loc>
-    <lastmod>2025-07-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2025-07-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/my-first-post/</loc>
+    <loc>https://rajkive.github.io/posts/my-first-post/</loc>
     <lastmod>2025-06-18T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/over-the-wire-bandit/</loc>
+    <loc>https://rajkive.github.io/posts/over-the-wire-bandit/</loc>
     <lastmod>2025-06-18T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/imaginaryctf-2025---web/</loc>
+    <loc>https://rajkive.github.io/about/</loc>
   </url><url>
-    <loc>http://localhost:1313/about/</loc>
+    <loc>https://rajkive.github.io/pages/</loc>
   </url><url>
-    <loc>http://localhost:1313/pages/</loc>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://rajkive.github.io/tags/</loc>
   </url>
 </urlset>
