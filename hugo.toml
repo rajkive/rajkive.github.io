@@ -21,7 +21,7 @@ theme = 'maverick'
 [menu]
   [[menu.main]]
     identifier = "about"
-    name = "About Me"
+    name = "About"
     url = "/about/"
     weight = "-110"
   [[menu.main]]
@@ -29,7 +29,6 @@ theme = 'maverick'
     name = "Post"
     url = "/posts/"
     weight = -200
-  
 
 [markup]
   [markup.goldmark.renderer]
