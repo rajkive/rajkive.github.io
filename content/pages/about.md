@@ -1,5 +1,6 @@
 ---
 title: About
+slug: "about"
 ---
 
 I like camera, coffee, books, tennis and cookies&cream ice cream. 
