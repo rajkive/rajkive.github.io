@@ -7,11 +7,63 @@
     
     <language>en</language>
     <copyright>Copyright 2026, Calvin Tran</copyright>
-    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 08 Mar 2026 00:00:00 +0000</lastBuildDate>
     <generator>Hugo - gohugo.io</generator>
     <docs>http://cyber.harvard.edu/rss/rss.html</docs>
     <atom:link href="https://rajkive.github.io//atom.xml" rel="self" type="application/atom+xml"/>
     
+    
+    <item>
+      <title>SSH Brute Force Detector - A beginner&#39;s guide</title>
+      <link>https://rajkive.github.io/posts/ssh-brute-force-detector/</link>
+      <description>&lt;h1 id=&#34;ssh-brute-force-detector&#34;&gt;SSH Brute-force Detector&lt;/h1&gt;
+&lt;p&gt;Even though it says ssh brute-force detector, I would say it is more like a simple pattern recognizer tool. I&amp;rsquo;ve been diving in to SOC work and one thing is clear, it is not just triaging the tickets. Automtion and Scripting is heavily used to make repetitive tasks easier, and also to make tasks like log analysis bearable. I came up with the idea when I was doing some log analysis exercise on LetsDefend, and as much as there are other tools available, it&amp;rsquo;s always better to know how to script to so you can make customizations.&lt;/p&gt;
+&lt;h3 id=&#34;logic-flow&#34;&gt;Logic Flow&lt;/h3&gt;
+&lt;p&gt;This is a very basic script so there aren&amp;rsquo;t much steps to take. We mostly use regex pattern to identify/flag potential IPs and their count. We define a few things like whitelisted IPs, a threshold to define how many attempts are concerning, and a time window as typically brute-force attacks would spam a lot in less amount of time. The most important thing here is to define the base pattern which would typically involve the IP address and date + time. The pattern I came up after some googling is &lt;code&gt;(\w+ +\d+ \d+:\d+:\d+).*from (\d+\.\d+\.\d+\.\d+)&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;main-code-logic&#34;&gt;Main Code Logic&lt;/h3&gt;
+&lt;p&gt;There is really no function to define, the logic is to open the log file, read each line, extract IP and date, time. See if it incldues &amp;ldquo;Failed Password&amp;rdquo; and then compare it against the threshold and time windwo defined. For my code, it will flag all the IPs which have more than 5 failed attempts in a specific time window.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;THRESHOLD = 5
+WHITELIST = {&amp;#34;127.0.0.1&amp;#34;, &amp;#34;192.168.1.1&amp;#34;}
+LOG_FILE = &amp;#34;Linux_2k.log&amp;#34;
+PATTERN = re.compile(r&amp;#34;(\w+ +\d+ \d+:\d+:\d+).*from (\d+\.\d+\.\d+\.\d+)&amp;#34;)
+
+
+failed_attempts = defaultdict(list)
+blocked_ips = set()
+
+#logic for parsing and extracting IP and datetime
+with open(LOG_FILE, &amp;#34;r&amp;#34;) as f:
+    for line in f:
+        if &amp;#34;Failed password&amp;#34; not in line:
+            continue
+        
+        match = PATTERN.search(line)
+        if not match:
+            continue
+        
+        timestamp_str = match.group(1)
+        ip = match.group(2)
+        
+        timestamp = datetime.strptime(timestamp_str, &amp;#34;%b %d %H:%M:%S&amp;#34;)
+        timestamp = timestamp.replace(year=datetime.now().year)
+        
+        failed_attempts[ip].append(timestamp)
+        
+for ip, timestamp in failed_attempts.items():
+    if len(failed_attempts[ip]) &amp;gt;= THRESHOLD:
+        if ip in WHITELIST:
+            continue
+        elif ip in blocked_ips:
+            continue
+        
+        blocked_ips.add(ip)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For full code you can check out my &lt;a href=&#34;https://github.com/rajkive/ssh-bruteforce-detector&#34;&gt;github&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s really it for this project. The main objective was to familiarize myself with regex, file operations and basics of scripting. I would try to add more functionality maybe using powershell to see if I can integrate it with an actual program or firewall.&lt;/p&gt;
+</description>
+      <author>rajkive</author>
+      <guid>https://rajkive.github.io/posts/ssh-brute-force-detector/</guid>
+      <pubDate>Sun, 08 Mar 2026 00:00:00 +0000</pubDate>
+    </item>
     
     <item>
       <title>ImaginaryCTF 2025 Web Challenges Writeups</title>
