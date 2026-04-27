@@ -7,11 +7,179 @@
     
     <language>en</language>
     <copyright>Copyright 2026, Calvin Tran</copyright>
-    <lastBuildDate>Sun, 08 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 27 Apr 2026 00:00:00 +0000</lastBuildDate>
     <generator>Hugo - gohugo.io</generator>
     <docs>http://cyber.harvard.edu/rss/rss.html</docs>
     <atom:link href="https://rajkive.github.io//atom.xml" rel="self" type="application/atom+xml"/>
     
+    
+    <item>
+      <title>48 hours of Exposed RDP: What 60,000 Failed Logins Reveal About Real Attack Patterns</title>
+      <link>https://rajkive.github.io/posts/azure-honeypot-lab/</link>
+      <description>&lt;h3 id=&#34;why-i-built-this&#34;&gt;Why I built this&lt;/h3&gt;
+&lt;p&gt;I wanted to know what attacks look like in the real world. Most of the practice I have stems from simulated labs on the internet in a closed environment. I wanted real data.&lt;/p&gt;
+&lt;p&gt;Specifically, I wanted to answer:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What does an exposed Windows server actually attract on the internet today?&lt;/li&gt;
+&lt;li&gt;Which credentials are attackers actually trying?&lt;/li&gt;
+&lt;li&gt;Can I capture and analyze enough real attacker telemetry to build production-grade detection rules?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The short answer: yes, and the data is more interesting than I expected.&lt;/p&gt;
+&lt;h3 id=&#34;what-i-built-the-architecture&#34;&gt;What I built (the architecture)&lt;/h3&gt;
+&lt;p&gt;The setup is intentionally simple - a single Windows Server 2022 VM in Azure, with RDP exposed to the public internet, forwarding Windows Security event logs to Microsoft Sentinel.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;                    ┌─────────────────────────────────────────┐
+                    │           Azure Subscription            │
+                    │         (cloudshield-lab RG)            │
+                    │                                         │
+   Internet ───RDP──┼──  ┌──────────────┐                     │
+   (attackers)      │    │ cloudshield- │                     │
+                    │    │ nsg (NSG)    │                     │
+                    │    │  ─ inbound:  │                     │
+                    │    │    3389/TCP  │                     │
+                    │    │  ─ outbound: │                     │
+                    │    │    deny ALL  │                     │
+                    │    │    except    │                     │
+                    │    │    Azure     │                     │
+                    │    │    services  │                     │
+                    │    └──────┬───────┘                     │
+                    │           │                             │
+                    │    ┌──────▼───────┐                     │
+                    │    │  web-srv-02  │                     │
+                    │    │  Win Srv 2025│                     │
+                    │    │  B-series    │                     │
+                    │    │              │                     │
+                    │    │  Audit policy│                     │
+                    │    │  + AMA agent │                     │
+                    │    └──────┬───────┘                     │
+                    │           │                             │
+                    │           ▼ (log shipping)              │
+                    │    ┌──────────────┐                     │
+                    │    │ Log Analytics│                     │
+                    │    │ Workspace    │                     │
+                    │    └──────┬───────┘                     │
+                    │           │                             │
+                    │    ┌──────▼───────┐                     │
+                    │    │  Microsoft   │                     │
+                    │    │  Sentinel    │                     │
+                    │    │  ─ Workbook  │                     │
+                    │    │  ─ Analytics │                     │
+                    │    └──────────────┘                     │
+                    └─────────────────────────────────────────┘
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;the-egress-controls&#34;&gt;The egress controls&lt;/h3&gt;
+&lt;p&gt;Exposing a Windows Server to the internet without compensating controls is a liability. The default Azure NSG configuration allows all outbound internet traffic. For a normal VM, fine. For a honeypot, this means: if an attacker compromises your box, they can use it as a launchpad -  cryptomining, command-and-control relay, outbound scanning, DDoS participation. Your subscription gets the abuse complaints and potentially the suspension.&lt;/p&gt;
+&lt;p&gt;I built the &lt;strong&gt;NSG&lt;/strong&gt; with a default-deny outbound posture, with explicit allows only for the Azure service endpoints needed for log shipping:
+OUTBOUND&lt;/p&gt;
+&lt;p&gt;Priority 4000 is the safety net. Azure evaluates rules lowest-priority-number first, so 4000 runs before Azure&amp;rsquo;s default AllowInternetOutBound at priority 65001 - outbound internet is denied unless the traffic matches one of the specific Azure service allows above.
+I verified this end-to-end from inside the VM with Test-NetConnection:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;powershell
+Test-NetConnection google.com -Port 44    #BLOCKED
+Test-NetConnection pastebin.com -Port 443 #BLOCKED
+Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/public/azure-honeypot/powershell.png&#34;
+  alt=&#34;powershell&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;the-data&#34;&gt;The Data&lt;/h3&gt;
+&lt;p&gt;Across 48 hours of exposure, the honeypot captured:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;804 failed authentication events (EventID 4625)&lt;/li&gt;
+&lt;li&gt;12 unique source IPs&lt;/li&gt;
+&lt;li&gt;9 countries of origin&lt;/li&gt;
+&lt;li&gt;4 distinct usernames attempted&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/public/azure-honeypot/sentine-.png&#34;
+  alt=&#34;dashboard&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+
+&lt;img
+  src=&#34;https://rajkive.github.io/public/azure-honeypot/sentine-3.png&#34;
+  alt=&#34;dashboard&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+
+&lt;img
+  src=&#34;https://rajkive.github.io/public/azure-honeypot/sentie-2.png&#34;
+  alt=&#34;dashboard&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Most-attempted usernames&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The top of the list is unsurprising - attackers run dictionaries that haven&amp;rsquo;t materially changed in years:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;1. Administrator : 804
+2. web-srv-02 : 34 
+3. test : 32
+4. administrator : 15
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The interesting tail of this distribution is what attackers think might be on the box. Service-account-style usernames (backup, sql, ftp, vnc) suggest opportunistic guessing of common roles.&lt;/p&gt;
+&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/public/azure-honeypot/sen.png&#34;
+  alt=&#34;dashboard&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Attacks came from 9 countries. The top sources by volume were from european and asian countires. This is consistent with public threat intelligence: attack origin geography correlates more with hosting infrastructure availability than with attacker location. Cheap VPS providers, residential proxies, and compromised IoT devices in any country can become attack sources.&lt;/p&gt;
+&lt;h3 id=&#34;from-data-to-detection-rules&#34;&gt;From data to detection rules&lt;/h3&gt;
+&lt;p&gt;Captured events without detections is a museum, not a security operation. The point of the exercise is to turn observed adversary behavior into rules that fire on it.
+I authored a detection rule for MITRE ATT&amp;amp;CK T1110 (Brute Force) in KQL (for Sentinel deployment):&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;KQL&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;SecurityEvent
+| where EventID == 4625
+| where isnotempty(IpAddress)
+| where IpAddress != &amp;#34;-&amp;#34;
+| where IpAddress !startswith &amp;#34;10.&amp;#34; and IpAddress !startswith &amp;#34;192.168.&amp;#34;
+| summarize FailedAttempts = count(), AttemptedUsernames = make_set (TargetUserName) by IpAddress, bin(TimeGenerated, 1h)
+| where FailedAttempts &amp;gt;= 5
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img
+  src=&#34;https://rajkive.github.io/public/azure-honeypot/s2.png&#34;
+  alt=&#34;incident-sc-1&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+
+&lt;img
+  src=&#34;https://rajkive.github.io/public/azure-honeypot/s3.png&#34;
+  alt=&#34;incident-sc-2&#34;
+  loading=&#34;lazy&#34;
+  decoding=&#34;async&#34;
+  class=&#34;full-width&#34;
+/&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;what-i-am-building-next&#34;&gt;What I am building next&lt;/h3&gt;
+&lt;p&gt;The honeypot generated raw IOCs (source IPs, usernames, behavioral patterns) but didn&amp;rsquo;t enrich them. The natural next phase is a Python pipeline that:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Pulls captured failed-logon data from Log Analytics via API
+Enriches each source IP against threat intel sources (AbuseIPDB, AlienVault OTX, MaxMind GeoIP).&lt;/li&gt;
+&lt;li&gt;Clusters IPs by ASN to identify discrete attacker campaigns&lt;/li&gt;
+&lt;li&gt;Outputs a ranked report of attacker personas&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is the analytical layer above raw event capture - the work that turns a SIEM query into actionable threat intelligence. Writeup forthcoming.&lt;/p&gt;
+&lt;p&gt;Full project on GitHub: &lt;a href=&#34;https://github.com/rajkive/cloudhshield---azure-RDP-honeypot-&#34;&gt;https://github.com/rajkive/cloudhshield---azure-RDP-honeypot-&lt;/a&gt;&lt;/p&gt;
+</description>
+      <author>rajkive</author>
+      <guid>https://rajkive.github.io/posts/azure-honeypot-lab/</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
+    </item>
     
     <item>
       <title>SSH Brute Force Detector - A beginner&#39;s guide</title>

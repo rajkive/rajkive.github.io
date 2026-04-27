@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Liste - https://rajkive.github.io/">
+    <title>48 hours of Exposed RDP: What 60,000 Failed Logins Reveal About Real Attack Patterns | rajkive</title>
+    <meta name="description" content="A minimal hugo theme focus on content">
+    <meta property="og:url" content="https://rajkive.github.io/posts/azure-honeypot-lab/">
+  <meta property="og:site_name" content="rajkive">
+  <meta property="og:title" content="48 hours of Exposed RDP: What 60,000 Failed Logins Reveal About Real Attack Patterns">
+  <meta property="og:description" content="Why I built this I wanted to know what attacks look like in the real world. Most of the practice I have stems from simulated labs on the internet in a closed environment. I wanted real data.
+Specifically, I wanted to answer:
+What does an exposed Windows server actually attract on the internet today? Which credentials are attackers actually trying? Can I capture and analyze enough real attacker telemetry to build production-grade detection rules? The short answer: yes, and the data is more interesting than I expected.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-04-27T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-04-27T00:00:00+00:00">
+
+    
+  <meta itemprop="name" content="48 hours of Exposed RDP: What 60,000 Failed Logins Reveal About Real Attack Patterns">
+  <meta itemprop="description" content="Why I built this I wanted to know what attacks look like in the real world. Most of the practice I have stems from simulated labs on the internet in a closed environment. I wanted real data.
+Specifically, I wanted to answer:
+What does an exposed Windows server actually attract on the internet today? Which credentials are attackers actually trying? Can I capture and analyze enough real attacker telemetry to build production-grade detection rules? The short answer: yes, and the data is more interesting than I expected.">
+  <meta itemprop="datePublished" content="2026-04-27T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2026-04-27T00:00:00+00:00">
+  <meta itemprop="wordCount" content="768">
+    
+    <link rel="canonical" href="https://rajkive.github.io/posts/azure-honeypot-lab/">
+    <link rel="icon" href="https://rajkive.github.io//assets/favicon.ico">
+    <link rel="dns-prefetch" href="https://www.google-analytics.com">
+    <link href="https://www.google-analytics.com" rel="preconnect" crossorigin>
+    <link rel="alternate" type="application/atom+xml" title="rajkive" href="https://rajkive.github.io//atom.xml" />
+    <link rel="alternate" type="application/json" title="rajkive" href="https://rajkive.github.io//feed.json" />
+    <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bricolage+Grotesque">
+    
+    <style>*,:after,:before{box-sizing:border-box;padding:0}body{font:1rem/1.5 bricolage grotesque,-apple-system,BlinkMacSystemFont,segoe ui,Helvetica,Arial,sans-serif;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;padding:2rem;background:#fffdfa;color:#000}.skip-link{position:absolute;top:-40px;left:0;background:#eee;z-index:100}.skip-link:focus{top:0}header{display:flex;justify-content:space-between;align-items:center;position:relative;padding-bottom:1rem}header .burger{display:none;background:0 0;border:none;padding:0;cursor:pointer}header .burger span{display:block;width:25px;height:3px;background:#000;margin:5px 0;transition:all .3s ease}@media(max-width:768px){header .burger{display:block;z-index:2}header .nav-menu{position:fixed;top:0;right:-100%;width:100%;height:100vh;background:#fffdfa;padding:2rem;transition:.3s ease;z-index:1}header .nav-menu.active{right:0}header .nav-menu ul{flex-direction:column;align-items:center;width:100%}header .nav-menu ul li{display:block;font-size:1.2rem;border-bottom:1px dotted #000;height:50px;display:flex;justify-content:center;align-items:center}header.menu-open .burger span:first-child{transform:rotate(45deg)translate(5px,6px)}header.menu-open .burger span:nth-child(2){opacity:0}header.menu-open .burger span:last-child{transform:rotate(-45deg)translate(5px,-6px)}}header a{text-decoration:none}header ul{list-style-type:none;padding:0}header li,header a{display:inline}.link{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}.time{font-variant-numeric:tabular-nums;white-space:nowrap}blockquote{border-left:5px solid #eee;padding-left:1rem;margin:0}a,a:visited{color:inherit}a:hover,a.heading-link{text-decoration:none}pre{padding:.5rem;overflow:auto;overflow-x:scroll;overflow-wrap:normal}code,pre{font-family:San Francisco Mono,Monaco,consolas,lucida console,dejavu sans mono,bitstream vera sans mono,monospace;font-size:normal;font-size:small;background:#eee}code{margin:.1rem;border:none;overflow:visible;overflow-wrap:anywhere}ul{list-style-type:square}ul,ol{padding-left:1.2rem}.list{line-height:2;list-style-type:none;padding-left:0}.list li{padding-bottom:.1rem}.meta{color:#777}.content{max-width:70ch;margin:0 auto}h2.post{padding-top:.5rem}header ul a:first-child{padding-left:1rem}.nav{height:1px;background:#000;content:'';max-width:10%}.list li{display:flex;align-items:baseline}.list li time{flex:initial}.hr-list{margin-top:0;margin-bottom:0;margin-right:.5rem;margin-left:.5rem;height:1px;border:0;border-bottom:1px dotted #ccc;flex:1 0 1rem}.m,hr{border:0;margin:3rem 0}img{max-width:100%;height:auto}.post-date{margin:5% 0}.index-date{color:#9a9a9a}.animate-blink{animation:opacity 1s infinite;opacity:1}@keyframes opacity{0%{opacity:1}50%{opacity:.5}100%{opacity:0}}.tags{display:flex;justify-content:space-between}.tags ul{padding:0;margin:0}.tags li{display:inline}.avatar{height:120px;width:120px;position:relative;margin:-10px 0 0 15px;float:right;border-radius:50%}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;text-align:left;padding:8px}th{background-color:#f2f2f2}</style>
+  
+    
+    
+    
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "posts",
+        "name": "48 hours of Exposed RDP: What 60,000 Failed Logins Reveal About Real Attack Patterns",
+        "headline": "48 hours of Exposed RDP: What 60,000 Failed Logins Reveal About Real Attack Patterns",
+        "alternativeHeadline": "",
+        "description": "\u003ch3 id=\u0022why-i-built-this\u0022\u003eWhy I built this\u003c\/h3\u003e\n\u003cp\u003eI wanted to know what attacks look like in the real world. Most of the practice I have stems from simulated labs on the internet in a closed environment. I wanted real data.\u003c\/p\u003e\n\u003cp\u003eSpecifically, I wanted to answer:\u003c\/p\u003e\n\u003cul\u003e\n\u003cli\u003eWhat does an exposed Windows server actually attract on the internet today?\u003c\/li\u003e\n\u003cli\u003eWhich credentials are attackers actually trying?\u003c\/li\u003e\n\u003cli\u003eCan I capture and analyze enough real attacker telemetry to build production-grade detection rules?\u003c\/li\u003e\n\u003c\/ul\u003e\n\u003cp\u003eThe short answer: yes, and the data is more interesting than I expected.\u003c\/p\u003e",
+        "inLanguage": "en-us",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/rajkive.github.io\/posts\/azure-honeypot-lab\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Rajshree"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Rajshree"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Rajshree"
+        },
+        "copyrightHolder" : "rajkive",
+        "copyrightYear" : "2026",
+        "dateCreated": "2026-04-27T00:00:00.00Z",
+        "datePublished": "2026-04-27T00:00:00.00Z",
+        "dateModified": "2026-04-27T00:00:00.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "rajkive",
+            "url": "https://rajkive.github.io/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/rajkive.github.io\/assets\/favicon.ico",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": "https://rajkive.github.io/assets/favicon.ico",
+        "url" : "https:\/\/rajkive.github.io\/posts\/azure-honeypot-lab\/",
+        "wordCount" : "768",
+        "genre" : [ ],
+        "keywords" : [ ]
+    }
+    </script>
+     
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const burger = document.querySelector('.burger');
+            const nav = document.querySelector('.nav-menu');
+            const header = document.querySelector('header');
+        
+            if (burger) {
+                burger.addEventListener('click', () => {
+                    nav.classList.toggle('active');
+                    header.classList.toggle('menu-open');
+                });
+        
+                
+                document.addEventListener('click', (e) => {
+                    if (!header.contains(e.target) && nav.classList.contains('active')) {
+                        nav.classList.remove('active');
+                        header.classList.remove('menu-open');
+                    }
+                });
+            }
+        });
+    </script> 
+  </head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main</a>
+  <main id="main">
+  <div class="content">
+    
+<header>
+  <p style="padding: 0;margin: 0;">
+    <a href="https://rajkive.github.io/">
+      <b>rajkive</b>
+      <span class="text-stone-500 animate-blink">▮</span>
+    </a>
+  </p>
+
+  
+  <button class="burger" aria-label="Toggle menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <nav class="nav-menu">
+    <ul style="padding: 0;margin: 0;">
+      
+      
+        <li class="">
+          <a href="/posts/"><span>Post</span></a>
+        </li>
+      
+        <li class="">
+          <a href="/about/"><span>About</span></a>
+        </li>
+      
+    </ul>
+  </nav>
+  
+</header>
+<hr class="hr-list" style="padding: 0;margin: 0;">
+    <section>
+      <h2 class="post">48 hours of Exposed RDP: What 60,000 Failed Logins Reveal About Real Attack Patterns</h2>
+      <h3 id="why-i-built-this">Why I built this</h3>
+<p>I wanted to know what attacks look like in the real world. Most of the practice I have stems from simulated labs on the internet in a closed environment. I wanted real data.</p>
+<p>Specifically, I wanted to answer:</p>
+<ul>
+<li>What does an exposed Windows server actually attract on the internet today?</li>
+<li>Which credentials are attackers actually trying?</li>
+<li>Can I capture and analyze enough real attacker telemetry to build production-grade detection rules?</li>
+</ul>
+<p>The short answer: yes, and the data is more interesting than I expected.</p>
+<h3 id="what-i-built-the-architecture">What I built (the architecture)</h3>
+<p>The setup is intentionally simple - a single Windows Server 2022 VM in Azure, with RDP exposed to the public internet, forwarding Windows Security event logs to Microsoft Sentinel.</p>
+<pre tabindex="0"><code>                    ┌─────────────────────────────────────────┐
+                    │           Azure Subscription            │
+                    │         (cloudshield-lab RG)            │
+                    │                                         │
+   Internet ───RDP──┼──  ┌──────────────┐                     │
+   (attackers)      │    │ cloudshield- │                     │
+                    │    │ nsg (NSG)    │                     │
+                    │    │  ─ inbound:  │                     │
+                    │    │    3389/TCP  │                     │
+                    │    │  ─ outbound: │                     │
+                    │    │    deny ALL  │                     │
+                    │    │    except    │                     │
+                    │    │    Azure     │                     │
+                    │    │    services  │                     │
+                    │    └──────┬───────┘                     │
+                    │           │                             │
+                    │    ┌──────▼───────┐                     │
+                    │    │  web-srv-02  │                     │
+                    │    │  Win Srv 2025│                     │
+                    │    │  B-series    │                     │
+                    │    │              │                     │
+                    │    │  Audit policy│                     │
+                    │    │  + AMA agent │                     │
+                    │    └──────┬───────┘                     │
+                    │           │                             │
+                    │           ▼ (log shipping)              │
+                    │    ┌──────────────┐                     │
+                    │    │ Log Analytics│                     │
+                    │    │ Workspace    │                     │
+                    │    └──────┬───────┘                     │
+                    │           │                             │
+                    │    ┌──────▼───────┐                     │
+                    │    │  Microsoft   │                     │
+                    │    │  Sentinel    │                     │
+                    │    │  ─ Workbook  │                     │
+                    │    │  ─ Analytics │                     │
+                    │    └──────────────┘                     │
+                    └─────────────────────────────────────────┘
+</code></pre><h3 id="the-egress-controls">The egress controls</h3>
+<p>Exposing a Windows Server to the internet without compensating controls is a liability. The default Azure NSG configuration allows all outbound internet traffic. For a normal VM, fine. For a honeypot, this means: if an attacker compromises your box, they can use it as a launchpad -  cryptomining, command-and-control relay, outbound scanning, DDoS participation. Your subscription gets the abuse complaints and potentially the suspension.</p>
+<p>I built the <strong>NSG</strong> with a default-deny outbound posture, with explicit allows only for the Azure service endpoints needed for log shipping:
+OUTBOUND</p>
+<p>Priority 4000 is the safety net. Azure evaluates rules lowest-priority-number first, so 4000 runs before Azure&rsquo;s default AllowInternetOutBound at priority 65001 - outbound internet is denied unless the traffic matches one of the specific Azure service allows above.
+I verified this end-to-end from inside the VM with Test-NetConnection:</p>
+<pre tabindex="0"><code>powershell
+Test-NetConnection google.com -Port 44    #BLOCKED
+Test-NetConnection pastebin.com -Port 443 #BLOCKED
+Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
+</code></pre><p><img
+  src="/public/azure-honeypot/powershell.png"
+  alt="powershell"
+  loading="lazy"
+  decoding="async"
+  class="full-width"
+/>
+
+</p>
+<h3 id="the-data">The Data</h3>
+<p>Across 48 hours of exposure, the honeypot captured:</p>
+<ul>
+<li>804 failed authentication events (EventID 4625)</li>
+<li>12 unique source IPs</li>
+<li>9 countries of origin</li>
+<li>4 distinct usernames attempted</li>
+</ul>
+<p><img
+  src="/public/azure-honeypot/sentine-.png"
+  alt="dashboard"
+  loading="lazy"
+  decoding="async"
+  class="full-width"
+/>
+
+
+<img
+  src="/public/azure-honeypot/sentine-3.png"
+  alt="dashboard"
+  loading="lazy"
+  decoding="async"
+  class="full-width"
+/>
+
+
+<img
+  src="/public/azure-honeypot/sentie-2.png"
+  alt="dashboard"
+  loading="lazy"
+  decoding="async"
+  class="full-width"
+/>
+
+</p>
+<p><strong>Most-attempted usernames</strong></p>
+<p>The top of the list is unsurprising - attackers run dictionaries that haven&rsquo;t materially changed in years:</p>
+<pre tabindex="0"><code>1. Administrator : 804
+2. web-srv-02 : 34 
+3. test : 32
+4. administrator : 15
+</code></pre><p>The interesting tail of this distribution is what attackers think might be on the box. Service-account-style usernames (backup, sql, ftp, vnc) suggest opportunistic guessing of common roles.</p>
+<p><img
+  src="/public/azure-honeypot/sen.png"
+  alt="dashboard"
+  loading="lazy"
+  decoding="async"
+  class="full-width"
+/>
+
+</p>
+<p>Attacks came from 9 countries. The top sources by volume were from european and asian countires. This is consistent with public threat intelligence: attack origin geography correlates more with hosting infrastructure availability than with attacker location. Cheap VPS providers, residential proxies, and compromised IoT devices in any country can become attack sources.</p>
+<h3 id="from-data-to-detection-rules">From data to detection rules</h3>
+<p>Captured events without detections is a museum, not a security operation. The point of the exercise is to turn observed adversary behavior into rules that fire on it.
+I authored a detection rule for MITRE ATT&amp;CK T1110 (Brute Force) in KQL (for Sentinel deployment):</p>
+<p><strong>KQL</strong></p>
+<pre tabindex="0"><code>SecurityEvent
+| where EventID == 4625
+| where isnotempty(IpAddress)
+| where IpAddress != &#34;-&#34;
+| where IpAddress !startswith &#34;10.&#34; and IpAddress !startswith &#34;192.168.&#34;
+| summarize FailedAttempts = count(), AttemptedUsernames = make_set (TargetUserName) by IpAddress, bin(TimeGenerated, 1h)
+| where FailedAttempts &gt;= 5
+</code></pre><p><img
+  src="/public/azure-honeypot/s2.png"
+  alt="incident-sc-1"
+  loading="lazy"
+  decoding="async"
+  class="full-width"
+/>
+
+
+<img
+  src="/public/azure-honeypot/s3.png"
+  alt="incident-sc-2"
+  loading="lazy"
+  decoding="async"
+  class="full-width"
+/>
+
+</p>
+<h3 id="what-i-am-building-next">What I am building next</h3>
+<p>The honeypot generated raw IOCs (source IPs, usernames, behavioral patterns) but didn&rsquo;t enrich them. The natural next phase is a Python pipeline that:</p>
+<ul>
+<li>Pulls captured failed-logon data from Log Analytics via API
+Enriches each source IP against threat intel sources (AbuseIPDB, AlienVault OTX, MaxMind GeoIP).</li>
+<li>Clusters IPs by ASN to identify discrete attacker campaigns</li>
+<li>Outputs a ranked report of attacker personas</li>
+</ul>
+<p>This is the analytical layer above raw event capture - the work that turns a SIEM query into actionable threat intelligence. Writeup forthcoming.</p>
+<p>Full project on GitHub: <a href="https://github.com/rajkive/cloudhshield---azure-RDP-honeypot-">https://github.com/rajkive/cloudhshield---azure-RDP-honeypot-</a></p>
+
+      
+      <div class="post-date">
+        <span class="g time">April 27, 2026 </span> &#8729;
+         
+      </div>
+      
+    </section>
+    
+    
+    <div id="comments">
+      
+<script src="https://utteranc.es/client.js"
+    repo=canhtran/maverick
+    issue-term="pathname"
+    theme=github-light
+    crossorigin="anonymous"
+    async>
+</script>
+
+
+    </div>
+    
+    
+  </div>
+</main>
+</body>
+</html>
