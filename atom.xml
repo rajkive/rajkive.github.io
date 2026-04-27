@@ -76,7 +76,7 @@ Test-NetConnection google.com -Port 44    #BLOCKED
 Test-NetConnection pastebin.com -Port 443 #BLOCKED
 Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img
-  src=&#34;https://rajkive.github.io/public/azure-honeypot/powershell.png&#34;
+  src=&#34;https://rajkive.github.io/azure-honeypot/powershell.png&#34;
   alt=&#34;powershell&#34;
   loading=&#34;lazy&#34;
   decoding=&#34;async&#34;
@@ -93,7 +93,7 @@ Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 &lt;li&gt;4 distinct usernames attempted&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img
-  src=&#34;https://rajkive.github.io/public/azure-honeypot/sentine-.png&#34;
+  src=&#34;https://rajkive.github.io/azure-honeypot/sentine-.png&#34;
   alt=&#34;dashboard&#34;
   loading=&#34;lazy&#34;
   decoding=&#34;async&#34;
@@ -102,7 +102,7 @@ Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 
 
 &lt;img
-  src=&#34;https://rajkive.github.io/public/azure-honeypot/sentine-3.png&#34;
+  src=&#34;https://rajkive.github.io/azure-honeypot/sentine-3.png&#34;
   alt=&#34;dashboard&#34;
   loading=&#34;lazy&#34;
   decoding=&#34;async&#34;
@@ -111,7 +111,7 @@ Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 
 
 &lt;img
-  src=&#34;https://rajkive.github.io/public/azure-honeypot/sentie-2.png&#34;
+  src=&#34;https://rajkive.github.io/azure-honeypot/sentie-2.png&#34;
   alt=&#34;dashboard&#34;
   loading=&#34;lazy&#34;
   decoding=&#34;async&#34;
@@ -127,7 +127,7 @@ Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 4. administrator : 15
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The interesting tail of this distribution is what attackers think might be on the box. Service-account-style usernames (backup, sql, ftp, vnc) suggest opportunistic guessing of common roles.&lt;/p&gt;
 &lt;p&gt;&lt;img
-  src=&#34;https://rajkive.github.io/public/azure-honeypot/sen.png&#34;
+  src=&#34;https://rajkive.github.io/azure-honeypot/sen.png&#34;
   alt=&#34;dashboard&#34;
   loading=&#34;lazy&#34;
   decoding=&#34;async&#34;
@@ -148,7 +148,7 @@ I authored a detection rule for MITRE ATT&amp;amp;CK T1110 (Brute Force) in KQL 
 | summarize FailedAttempts = count(), AttemptedUsernames = make_set (TargetUserName) by IpAddress, bin(TimeGenerated, 1h)
 | where FailedAttempts &amp;gt;= 5
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img
-  src=&#34;https://rajkive.github.io/public/azure-honeypot/s2.png&#34;
+  src=&#34;https://rajkive.github.io/azure-honeypot/s2.png&#34;
   alt=&#34;incident-sc-1&#34;
   loading=&#34;lazy&#34;
   decoding=&#34;async&#34;
@@ -157,7 +157,7 @@ I authored a detection rule for MITRE ATT&amp;amp;CK T1110 (Brute Force) in KQL 
 
 
 &lt;img
-  src=&#34;https://rajkive.github.io/public/azure-honeypot/s3.png&#34;
+  src=&#34;https://rajkive.github.io/azure-honeypot/s3.png&#34;
   alt=&#34;incident-sc-2&#34;
   loading=&#34;lazy&#34;
   decoding=&#34;async&#34;

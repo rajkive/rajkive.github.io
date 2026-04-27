@@ -216,7 +216,7 @@ Test-NetConnection google.com -Port 44    #BLOCKED
 Test-NetConnection pastebin.com -Port 443 #BLOCKED
 Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 </code></pre><p><img
-  src="/public/azure-honeypot/powershell.png"
+  src="/azure-honeypot/powershell.png"
   alt="powershell"
   loading="lazy"
   decoding="async"
@@ -233,7 +233,7 @@ Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 <li>4 distinct usernames attempted</li>
 </ul>
 <p><img
-  src="/public/azure-honeypot/sentine-.png"
+  src="/azure-honeypot/sentine-.png"
   alt="dashboard"
   loading="lazy"
   decoding="async"
@@ -242,7 +242,7 @@ Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 
 
 <img
-  src="/public/azure-honeypot/sentine-3.png"
+  src="/azure-honeypot/sentine-3.png"
   alt="dashboard"
   loading="lazy"
   decoding="async"
@@ -251,7 +251,7 @@ Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 
 
 <img
-  src="/public/azure-honeypot/sentie-2.png"
+  src="/azure-honeypot/sentie-2.png"
   alt="dashboard"
   loading="lazy"
   decoding="async"
@@ -267,7 +267,7 @@ Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
 4. administrator : 15
 </code></pre><p>The interesting tail of this distribution is what attackers think might be on the box. Service-account-style usernames (backup, sql, ftp, vnc) suggest opportunistic guessing of common roles.</p>
 <p><img
-  src="/public/azure-honeypot/sen.png"
+  src="/azure-honeypot/sen.png"
   alt="dashboard"
   loading="lazy"
   decoding="async"
@@ -288,7 +288,7 @@ I authored a detection rule for MITRE ATT&amp;CK T1110 (Brute Force) in KQL (for
 | summarize FailedAttempts = count(), AttemptedUsernames = make_set (TargetUserName) by IpAddress, bin(TimeGenerated, 1h)
 | where FailedAttempts &gt;= 5
 </code></pre><p><img
-  src="/public/azure-honeypot/s2.png"
+  src="/azure-honeypot/s2.png"
   alt="incident-sc-1"
   loading="lazy"
   decoding="async"
@@ -297,7 +297,7 @@ I authored a detection rule for MITRE ATT&amp;CK T1110 (Brute Force) in KQL (for
 
 
 <img
-  src="/public/azure-honeypot/s3.png"
+  src="/azure-honeypot/s3.png"
   alt="incident-sc-2"
   loading="lazy"
   decoding="async"
