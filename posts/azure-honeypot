@@ -1,0 +1,148 @@
+---
+author: "Rajshree"
+title: "48 hours of Exposed RDP: What 60,000 Failed Logins Reveal About Real Attack Patterns"
+date: "2026-04-27"
+---
+
+### Why I built this
+I wanted to know what attacks look like in the real world. Most of the practice I have stems from simulated labs on the internet in a closed environment. I wanted real data. Specifically, I wanted to answer:
+
+- What does an exposed Windows server actually attract on the internet today?
+- Which credentials are attackers actually trying?
+- Can I capture and analyze enough real attacker telemetry to build production-grade detection rules?
+
+The short answer: yes, and the data is more interesting than I expected.
+
+
+### What I built (the architecture)
+The setup is intentionally simple - a single Windows Server 2022 VM in Azure, with RDP exposed to the public internet, forwarding Windows Security event logs to Microsoft Sentinel.
+
+
+```
+                    ┌─────────────────────────────────────────┐
+                    │           Azure Subscription            │
+                    │         (cloudshield-lab RG)            │
+                    │                                         │
+   Internet ───RDP──┼──  ┌──────────────┐                     │
+   (attackers)      │    │ cloudshield- │                     │
+                    │    │ nsg (NSG)    │                     │
+                    │    │  ─ inbound:  │                     │
+                    │    │    3389/TCP  │                     │
+                    │    │  ─ outbound: │                     │
+                    │    │    deny ALL  │                     │
+                    │    │    except    │                     │
+                    │    │    Azure     │                     │
+                    │    │    services  │                     │
+                    │    └──────┬───────┘                     │
+                    │           │                             │
+                    │    ┌──────▼───────┐                     │
+                    │    │  web-srv-02  │                     │
+                    │    │  Win Srv 2025│                     │
+                    │    │  B-series    │                     │
+                    │    │              │                     │
+                    │    │  Audit policy│                     │
+                    │    │  + AMA agent │                     │
+                    │    └──────┬───────┘                     │
+                    │           │                             │
+                    │           ▼ (log shipping)              │
+                    │    ┌──────────────┐                     │
+                    │    │ Log Analytics│                     │
+                    │    │ Workspace    │                     │
+                    │    └──────┬───────┘                     │
+                    │           │                             │
+                    │    ┌──────▼───────┐                     │
+                    │    │  Microsoft   │                     │
+                    │    │  Sentinel    │                     │
+                    │    │  ─ Workbook  │                     │
+                    │    │  ─ Analytics │                     │
+                    │    └──────────────┘                     │
+                    └─────────────────────────────────────────┘
+
+```
+
+
+
+### The egress controls
+Exposing a Windows Server to the internet without compensating controls is a liability. The default Azure NSG configuration allows all outbound internet traffic. For a normal VM, fine. For a honeypot, this means: if an attacker compromises your box, they can use it as a launchpad -  cryptomining, command-and-control relay, outbound scanning, DDoS participation. Your subscription gets the abuse complaints and potentially the suspension.
+
+I built the **NSG** with a default-deny outbound posture, with explicit allows only for the Azure service endpoints needed for log shipping:
+OUTBOUND
+
+Priority 4000 is the safety net. Azure evaluates rules lowest-priority-number first, so 4000 runs before Azure's default AllowInternetOutBound at priority 65001 - outbound internet is denied unless the traffic matches one of the specific Azure service allows above.
+I verified this end-to-end from inside the VM with Test-NetConnection:
+```
+powershell
+Test-NetConnection google.com -Port 44    #BLOCKED
+Test-NetConnection pastebin.com -Port 443 #BLOCKED
+Test-NetConnection global.handler.control.monitor.azure.com -Port 443 # ALLOWED
+```
+
+![powershell](/public/azure-honeypot/powershell.png)
+
+
+
+### The Data
+Across 48 hours of exposure, the honeypot captured:
+
+- 804 failed authentication events (EventID 4625)
+- 12 unique source IPs
+- 9 countries of origin
+- 4 distinct usernames attempted
+
+
+![dashboard](/public/azure-honeypot/sentine-.png)
+![dashboard](/public/azure-honeypot/sentine-3.png)
+![dashboard](/public/azure-honeypot/sentie-2.png)
+
+**Most-attempted usernames**
+
+The top of the list is unsurprising - attackers run dictionaries that haven't materially changed in years:
+```
+1. Administrator : 804
+2. web-srv-02 : 34 
+3. test : 32
+4. administrator : 15
+```
+
+The interesting tail of this distribution is what attackers think might be on the box. Service-account-style usernames (backup, sql, ftp, vnc) suggest opportunistic guessing of common roles.
+
+![dashboard](/public/azure-honeypot/sen.png)
+
+
+Attacks came from 9 countries. The top sources by volume were from european and asian countires. This is consistent with public threat intelligence: attack origin geography correlates more with hosting infrastructure availability than with attacker location. Cheap VPS providers, residential proxies, and compromised IoT devices in any country can become attack sources.
+
+
+
+### From data to detection rules
+Captured events without detections is a museum, not a security operation. The point of the exercise is to turn observed adversary behavior into rules that fire on it.
+I authored a detection rule for MITRE ATT&CK T1110 (Brute Force) in KQL (for Sentinel deployment):
+
+**KQL**
+```
+SecurityEvent
+| where EventID == 4625
+| where isnotempty(IpAddress)
+| where IpAddress != "-"
+| where IpAddress !startswith "10." and IpAddress !startswith "192.168."
+| summarize FailedAttempts = count(), AttemptedUsernames = make_set (TargetUserName) by IpAddress, bin(TimeGenerated, 1h)
+| where FailedAttempts >= 5
+```
+
+![incident-sc-1](/public/azure-honeypot/s2.png)
+![incident-sc-2](/public/azure-honeypot/s3.png)
+
+
+
+### What I am building next
+The honeypot generated raw IOCs (source IPs, usernames, behavioral patterns) but didn't enrich them. The natural next phase is a Python pipeline that:
+
+- Pulls captured failed-logon data from Log Analytics via API
+Enriches each source IP against threat intel sources (AbuseIPDB, AlienVault OTX, MaxMind GeoIP).
+- Clusters IPs by ASN to identify discrete attacker campaigns
+- Outputs a ranked report of attacker personas
+
+This is the analytical layer above raw event capture - the work that turns a SIEM query into actionable threat intelligence. Writeup forthcoming.
+
+
+
+Full project on GitHub: https://github.com/rajkive/cloudhshield---azure-RDP-honeypot-
